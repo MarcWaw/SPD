@@ -1,0 +1,14 @@
+﻿  main.cpp
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\main.cpp(44,26): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\main.cpp(59,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+  RPQ.cpp
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(8,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(21,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(39,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(56,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(70,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(90,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(110,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+C:\Users\krios\source\repos\Project_1\RPQ\RPQ\RPQ.cpp(130,29): warning C4267: "inicjowanie": konwersja z "size_t" do "int", możliwa utrata danych
+  Generowanie kodu...
+  RPQ.vcxproj -> C:\Users\krios\source\repos\Project_1\RPQ\x64\Debug\RPQ.exe

@@ -1,0 +1,38 @@
+Pomyslnie otwarto plik o nazwie: Data.txt
+//---------------------------------------------------------------------------------
+Znaleziono: data.1
+Ilosc zadan do wykonania: 24
+
+Znaleziono optymalne rozwiazanie dla danych data.1 w czasie 818300 ns
+Czas wykonywania sie zadan: 14239 jednostek czasu.
+Najlepsza znaleziona permutacja:
+Permutacja: [9 18 22 11 5 20 10 21 24 3 13 23 17 14 12 8 4 6 7 15 1 19 2 16].
+//---------------------------------------------------------------------------------
+Znaleziono: data.2
+Ilosc zadan do wykonania: 24
+
+Znaleziono optymalne rozwiazanie dla danych data.2 w czasie 855600 ns
+Czas wykonywania sie zadan: 33465 jednostek czasu.
+Najlepsza znaleziona permutacja:
+Permutacja: [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24].
+//---------------------------------------------------------------------------------
+Znaleziono: data.3
+Ilosc zadan do wykonania: 48
+
+Znaleziono optymalne rozwiazanie dla danych data.3 w czasie 2939000 ns
+Czas wykonywania sie zadan: 40042 jednostek czasu.
+Najlepsza znaleziona permutacja:
+Permutacja: [9 10 44 30 48 42 29 22 12 47 35 15 33 26 25 36 19 14 37 43 31 16 13 28 3 21 6 32 39 5 34 41 38 46 17 2 18 40 7 45 27 23 20 4 11 1 24 8].
+//---------------------------------------------------------------------------------
+Znaleziono: data.4
+Ilosc zadan do wykonania: 48
+
+Znaleziono optymalne rozwiazanie dla danych data.4 w czasie 2881800 ns
+Czas wykonywania sie zadan: 39616 jednostek czasu.
+Najlepsza znaleziona permutacja:
+Permutacja: [37 19 45 17 20 21 41 25 29 12 8 7 23 24 15 43 6 48 27 10 32 46 16 26 28 31 36 2 4 42 13 47 30 9 22 33 1 35 14 44 39 40 5 3 38 11 34 18].
+//---------------------------------------------------------------------------------
+
+Uzyskany wynik (suma czasow): 127362
+
+Czas wykonywania zadania 31989900 ns ~ 31989 us ~ 31 ms ~ 0 s

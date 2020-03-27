@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\WiTi",
+    "\\WiTi\\WiTi"
   ],
+  "SelectedNode": "\\WiTi\\WiTi\\main.cpp",
   "PreviewInSolutionExplorer": false
 }
