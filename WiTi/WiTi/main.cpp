@@ -8,21 +8,25 @@
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
-#include <iterator>
-
 
 #define MAX_TEST_NUMBER 11
 #define MAX_N 20
+
+struct task {
+	int p;
+	int w;
+	int d;
+	int id;
+};
 
 using namespace std;
 int main()
 {
 	const char* file_name = "data.txt";
-	const char* data_name[MAX_TEST_NUMBER] = { "data.10:","data.11:","data.12:","data.13:","data.14:","data.15:","data.16:","data.17:","data.18:","data.19:","data.20:" };
+	const string data_name[MAX_TEST_NUMBER] = { "data.10","data.11","data.12","data.13","data.14","data.15","data.16","data.17","data.18","data.19","data.20" };
 
-	int p[MAX_N]; // tablica zawieraj¹ca czas wykonania zadañ
-	int w[MAX_N]; // tablica zawieraj¹ca wspó³czynniki kary za spóŸnienie
-	int d[MAX_N]; // tablica zawieraj¹ca ¿¹dane terminy zakoñczenia
+	task tasks[MAX_N];
+
 	double number_of_permutations = 0;
 
 	string line;
@@ -38,11 +42,12 @@ int main()
 	}
 	else {
 		cout << "Pomyslnie otwarto plik o nazwie: " << file_name << endl;
-		for (int i = 0; i < MAX_TEST_NUMBER; i++) {
+		cout << "-------------------------------------------------------------------------" << endl;
+		for (int k = 0; k <1; k++) {
 			int n = 0; // iloœæ zadañ do wykonania
 
-			cout << "Plik: " << data_name[i] << endl;
-			while (line != data_name[i]) {
+			cout << "Plik: " << data_name[k] << ":" << endl;
+			while (line != (data_name[k] + ":")) {
 				getline(data_file, line);
 			}
 
@@ -50,7 +55,9 @@ int main()
 			cout << "Ilosc zadan do wykonania: " << n << endl;
 
 			for (int j = 0; j < n; j++) {
-				data_file >> p[j] >> w[j] >> d[j];
+				//data_file >> p[j] >> w[j] >> d[j];
+				tasks[j].id = j;
+				data_file >> tasks[j].p >> tasks[j].w >> tasks[j].d;
 			}
 
 			// Wyœwietlenie
@@ -70,7 +77,6 @@ int main()
 
 			for (int sub_set_index = 1; sub_set_index < number_of_permutations; sub_set_index++) {
 				sum_of_p_InSubSet = 0;
-
 				for (int i = 0, b = 1; i < n; i++, b *= 2) {
 					/*
 					i - indeks zadania w tabeli
@@ -78,26 +84,28 @@ int main()
 					*/
 
 					if (sub_set_index & b) { // iloczyn bitowy
-						sum_of_p_InSubSet += p[i];
+						sum_of_p_InSubSet += tasks[i].p;
 						//cout << "Zaszedl iloczyn bitowy" << endl;
 					}
 				}
 
 				sub_set_vector[sub_set_index] = numeric_limits<int>::max();
-
+				
 				for (int i = 0, b = 1; i < n; i++, b *= 2) {
 					if (sub_set_index & b) {
 						// algorytm PD
-						sub_set_vector[sub_set_index] = min(sub_set_vector[sub_set_index], sub_set_vector[sub_set_index - b] + w[i] * max(0, sum_of_p_InSubSet - d[i]));
+						
+						sub_set_vector[sub_set_index] = min(sub_set_vector[sub_set_index], sub_set_vector[sub_set_index - b] + tasks[i].w * max(0, sum_of_p_InSubSet - tasks[i].d));
 					}
 				}
 			}
+			cout << endl;
 			auto search_end = chrono::steady_clock::now();
-			cout << endl << "Znaleziono optymalne rozwiazanie dla danych: " << data_name[i] << " w czasie: " << chrono::duration_cast<chrono::nanoseconds>(search_end - search_start).count() << " ns" << endl;
-			cout << "Optimal time: " << sub_set_vector.back() << endl;
+			cout << "Optymalny czas wykonywania zadan: " << sub_set_vector.back() << " jednostek czasu." << endl;
+			cout << endl << "Znaleziono optymalne rozwiazanie dla danych [" << data_name[k] << "] w czasie: " << chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count() << " ms" << endl;
 			sub_set_vector.clear();
 
-			cout << "-------------------------------------------------------------" << endl;
+			cout << "-------------------------------------------------------------------------" << endl;
 		}
 	}
 
