@@ -48,37 +48,62 @@ int main() {
 
 		cout << "Pomyslnie otwarto plik o nazwie: " << file_name << endl;
 		cout << "-------------------------------------------------------------------------" << endl;
+		auto experiment_start = chrono::steady_clock::now();
+		for (int i = 0; i < 8; i++) {
+			int m = 0;          // maszyny
+			int n = 0;          // zadania
 
-		for (int i = 0; i < MAX_TEST_NUMBER; i++) {
-			int machines = 0;
-			int tasks = 0;
-			int** time_matrix;
+			int* priority_array;// tablica priorytetow zadan
+			int** time_matrix;  // macierz czasow
 
 			//WCZYTANIE ZESTAWU DANYCH######################################################################
-			cout << "Zestaw danych: " << data_name[i] << endl;
+			cout << "Zestaw danych: " << data_name[i] << endl << endl;
 			while (line != (data_name[i] + ":")) {
 				getline(data_file, line);
 			}
 
-			data_file >> tasks >> machines;
-			cout << "Ilosc zadan: " << tasks << endl;
-			cout << "Ilosc maszyn: " << machines << endl;
+			data_file >> n >> m;
+			cout << "Ilosc zadan: " << n << endl;
+			cout << "Ilosc maszyn: " << m << endl;
 
 			// Alokacja dynamicznej macierzy
-			time_matrix = new int* [tasks];
-			for (int j = 0; j < tasks; j++)
-				time_matrix[j] = new int[machines];
+			time_matrix = new int* [n];
+			for (int j = 0; j < n; j++)
+				time_matrix[j] = new int[m];
 			//Zapis danych z pliku do macierzy
-			for (int a = 0; a < tasks; a++)
-				for (int b = 0; b < machines; b++)
+			for (int a = 0; a < n; a++)
+				for (int b = 0; b < m; b++)
 					data_file >> time_matrix[a][b]; // a - wiersz b - kolumna
 			
+			/*
 			//Wyswietl macierz
-			/*for (int a = 0; a < tasks; a++) {
+			for (int a = 0; a < tasks; a++) {
 				for (int b = 0; b < machines; b++)
 					cout << time_matrix[a][b] << " ";
 				cout << endl;
-			}*/
+			}
+			*/
+			//##############################################################################################
+
+			//WYZNACZANIE PRIORYTETOW ZADAN#################################################################
+			priority_array = new int[n];
+
+			for (int a = 0; a < n; a++) {
+				int priority_sum = 0;
+				for (int b = 0; b < m; b++) {
+					priority_sum = priority_sum + time_matrix[a][b];
+				}
+				priority_array[a] = priority_sum;
+			}
+
+			/*
+			//Wyswietl priorytet zadan
+			cout << endl << "Priorytety zadan: " << endl;
+			for (int a = 0; a < n; a++) {
+				cout << "Zadanie " << a + 1 << ": " << priority_array[a] << endl;
+			}
+			*/
+
 			//##############################################################################################
 
 			//ALGORYTM NEH##################################################################################
@@ -87,15 +112,18 @@ int main() {
 			auto search_end = chrono::steady_clock::now();
 			//##############################################################################################
 
-			cout << endl << "Znaleziono optymalne rozwiazanie dla danych [" << data_name[i] << "] w czasie: ";
+			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
 			cout << chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count() << " ms" << endl;
 			cout << "-------------------------------------------------------------------------" << endl;
 
 			//Zwalnianie pamieci macierzy dynamicznej
-			for (int i = 0; i < tasks; ++i)
+			for (int i = 0; i < n; ++i)
 				delete[] time_matrix[i];
 			delete[] time_matrix;
 		}
+		auto experiment_end = chrono::steady_clock::now();
+		cout << endl << "Obliczenia calosci zadanie trwaly: ";
+		cout << chrono::duration_cast<chrono::milliseconds>(experiment_end - experiment_start).count() << " ms" << endl;
 	}
 	data_file.close();
 
