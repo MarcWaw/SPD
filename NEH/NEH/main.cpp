@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <chrono>
 
-#define MAX_TEST_NUMBER 1
+#define MAX_TEST_NUMBER 121
 
 using namespace std;
 
@@ -108,7 +108,7 @@ int main() {
 		cout << "Pomyslnie otwarto plik o nazwie: " << file_name << endl;
 		cout << "-------------------------------------------------------------------------" << endl;
 		auto experiment_start = chrono::steady_clock::now();
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < MAX_TEST_NUMBER; i++) {
 			int m = 0;          // maszyny
 			int n = 0;          // zadania
 
@@ -136,13 +136,14 @@ int main() {
 			
 			
 			//Wyswietl macierz
+			/*
 			cout << endl <<  "Macierz czasow wykonywania: " << endl;
 			for (int a = 0; a < n; a++) {
 				for (int b = 0; b < m; b++)
 					cout << time_matrix[a][b] << " ";
 				cout << endl;
 			}
-			
+			*/
 			//##############################################################################################
 
 			//WYZNACZANIE PRIORYTETOW ZADAN#################################################################
@@ -159,11 +160,12 @@ int main() {
 
 			
 			//Wyswietl priorytety zadan
+			/*
 			cout << endl << "Priorytety zadan: " << endl;
 			for (int a = 0; a < n; a++) {
 				cout << "Zadanie " << priority_array[a].id << ": " << priority_array[a].priority << endl;
 			}
-
+			*/
 			//TODO
 			//Sortowanie QuickSortem
 			
@@ -177,7 +179,6 @@ int main() {
 				for (int k = 0; k < j + 1; k++) {
 					permutation[k] = k;
 				}
-				cout << calculate_c_max(time_matrix, permutation, m, j + 1) << endl;
 			}
 
 
