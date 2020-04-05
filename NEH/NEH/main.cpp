@@ -18,6 +18,44 @@ struct taskp{
 	int priority;
 };
 
+//WYLICZANIE CZASÓW#############################################################################
+int** caclculate_left(int** matrix, int m, int n) {
+	int** temp_matrix;
+	// Alokacja dynamicznej macierzy
+	temp_matrix = new int* [n];
+	for (int j = 0; j < n; j++)
+		temp_matrix[j] = new int[m];
+	//Zapis danych z pliku do macierzy
+	for (int a = 1; a < n; a++)
+		for (int b = 1; b < m; b++)
+			temp_matrix[a][b] = NULL; // a - wiersz b - kolumna
+
+	return temp_matrix;
+
+	for (int i = 0; i < n; ++i)
+		delete[] temp_matrix[i];
+	delete[] temp_matrix;
+}
+
+int** caclculate_right(int** matrix, int m, int n) {
+	int** temp_matrix;
+	// Alokacja dynamicznej macierzy
+	temp_matrix = new int* [n];
+	for (int j = 0; j < n; j++)
+		temp_matrix[j] = new int[m];
+	//Zapis danych z pliku do macierzy
+	for (int a = 1; a < n; a++)
+		for (int b = 1; b < m; b++)
+			temp_matrix[a][b] = NULL; // a - wiersz b - kolumna
+
+	return temp_matrix;
+
+	for (int i = 0; i < n; ++i)
+		delete[] temp_matrix[i];
+	delete[] temp_matrix;
+}
+//##############################################################################################
+
 //WYLICZANIE CMAX###############################################################################
 int calculate_c_max(int** matrix, int* permutation, int m, int n) {
 	int c_max = 0;
@@ -120,13 +158,15 @@ int main() {
 			}
 
 			
-			//Wyswietl priorytet zadan
+			//Wyswietl priorytety zadan
 			cout << endl << "Priorytety zadan: " << endl;
 			for (int a = 0; a < n; a++) {
 				cout << "Zadanie " << priority_array[a].id << ": " << priority_array[a].priority << endl;
 			}
-			
 
+			//TODO
+			//Sortowanie QuickSortem
+			
 			//##############################################################################################
 
 			//ALGORYTM NEH##################################################################################
