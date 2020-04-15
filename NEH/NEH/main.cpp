@@ -8,8 +8,9 @@
 #include <ctime>
 #include <cstdlib>
 #include <chrono>
+#include <list>
 
-#define MAX_TEST_NUMBER 121
+#define MAX_TEST_NUMBER 1
 
 using namespace std;
 
@@ -18,57 +19,97 @@ struct taskp{
 	int priority;
 };
 
-//WYLICZANIE CZASÓW#############################################################################
-int** caclculate_left(int** matrix, int m, int n) {
-	int** temp_matrix;
-	// Alokacja dynamicznej macierzy
-	temp_matrix = new int* [n];
-	for (int j = 0; j < n; j++)
-		temp_matrix[j] = new int[m];
-	//Zapis danych z pliku do macierzy
-	for (int a = 1; a < n; a++)
-		for (int b = 1; b < m; b++)
-			temp_matrix[a][b] = NULL; // a - wiersz b - kolumna
-
-	return temp_matrix;
-
-	for (int i = 0; i < n; ++i)
-		delete[] temp_matrix[i];
-	delete[] temp_matrix;
-}
-
-int** caclculate_right(int** matrix, int m, int n) {
-	int** temp_matrix;
-	// Alokacja dynamicznej macierzy
-	temp_matrix = new int* [n];
-	for (int j = 0; j < n; j++)
-		temp_matrix[j] = new int[m];
-	//Zapis danych z pliku do macierzy
-	for (int a = 1; a < n; a++)
-		for (int b = 1; b < m; b++)
-			temp_matrix[a][b] = NULL; // a - wiersz b - kolumna
-
-	return temp_matrix;
-
-	for (int i = 0; i < n; ++i)
-		delete[] temp_matrix[i];
-	delete[] temp_matrix;
-}
-//##############################################################################################
-
 //WYLICZANIE CMAX###############################################################################
-int calculate_c_max(int** matrix, int* permutation, int m, int n) {
+int calculate_from_left_top(int** matrix, int* permutation, int m, int n) {
 	int c_max = 0;
-
-	int *m_time = new int[m];
-
+	int** m_time;
+	m_time = new int* [n];
+	for (int i = 0; i < n; i++)
+		m_time[i] = new int[m];
 	for (int i = 0; i < n; i++) {
 		for (int j = 0; j < m; j++) {
-			if (m_time[j] < matrix[permutation[i]][j])
-				m_time[j] = m_time[j] + matrix[permutation[i]][j];
+			m_time[i][j] = 0;
 		}
+		
 	}
 
+	for (int i = 0; i < n; i++) { //zadania
+		if (i == 0) {
+			for (int j = 0; j < m; j++) {
+				if (j == 0) {
+					m_time[i][j] = matrix[permutation[i]][j];
+				}
+				else {
+					m_time[i][j] = m_time[i][j-1] + matrix[permutation[i]][j];
+				}				
+			}
+		}
+		else {
+			for (int j = 0; j < m; j++) { //maszyny
+				if (j == 0) {
+					m_time[i][j] = m_time[i - 1][j] + matrix[permutation[i]][j];
+				}
+				else {
+					if (m_time[i - 1][j] < m_time[i][j - 1]) {
+						m_time[i][j] = m_time[i][j - 1] + matrix[permutation[i]][j];
+					}
+					else {
+						m_time[i][j] = m_time[i - 1][j] + matrix[permutation[i]][j];
+					}
+				}
+			}
+		}
+	}
+	c_max = m_time[n-1][m-1];
+	for (int i = 0; i < n; ++i)
+		delete[] m_time[i];
+	delete[] m_time;
+	return c_max;
+}
+
+int calculate_from_right_bottom(int** matrix, int* permutation, int m, int n) {
+	int c_max = 0;
+	int** m_time;
+	m_time = new int* [n];
+	for (int i = 0; i < n; i++)
+		m_time[i] = new int[m];
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			m_time[i][j] = 0;
+		}
+
+	}
+
+	for (int i = n - 1; i >= 0; i--) { //zadania
+		if (i == n - 1) {
+			for (int j = m - 1; j >= 0; j--) {
+				if (j == m - 1) {
+					m_time[i][j] = matrix[permutation[i]][j];
+				}
+				else {
+					m_time[i][j] = m_time[i][j + 1] + matrix[permutation[i]][j];
+				}
+			}
+		}
+		else {
+			for (int j = m - 1; j >= 0; j--) { //maszyny
+				if (j == m - 1) {
+					m_time[i][j] = m_time[i + 1][j] + matrix[permutation[i]][j];
+				}
+				else {
+					if (m_time[i + 1][j] < m_time[i][j + 1]) {
+						m_time[i][j] = m_time[i][j + 1] + matrix[permutation[i]][j];
+					}
+					else {
+						m_time[i][j] = m_time[i + 1][j] + matrix[permutation[i]][j];
+					}
+				}
+			}
+		}
+	}
+	c_max = m_time[0][0];
+	for (int i = 0; i < n; ++i)
+		delete[] m_time[i];
 	delete[] m_time;
 	return c_max;
 }
@@ -78,6 +119,7 @@ int main() {
 	ifstream data_file;
 	const char* file_name = "Data.txt";
 	string data_name[MAX_TEST_NUMBER];
+	int time_sum = 0;
 	
 	//GENEROWANIE NAZW TESTOW#######################################################################
 	string sdata = "data.";
@@ -107,12 +149,10 @@ int main() {
 
 		cout << "Pomyslnie otwarto plik o nazwie: " << file_name << endl;
 		cout << "-------------------------------------------------------------------------" << endl;
-		auto experiment_start = chrono::steady_clock::now();
 		for (int i = 0; i < MAX_TEST_NUMBER; i++) {
 			int m = 0;          // maszyny
 			int n = 0;          // zadania
 
-			taskp* priority_array;// tablica priorytetow zadan
 			int** time_matrix;  // macierz czasow
 
 			//WCZYTANIE ZESTAWU DANYCH######################################################################
@@ -147,25 +187,38 @@ int main() {
 			//##############################################################################################
 
 			//WYZNACZANIE PRIORYTETOW ZADAN#################################################################
-			priority_array = new taskp[n];
+			taskp* sorted_priority_array = new taskp[n];
 
 			for (int a = 0; a < n; a++) {
+				sorted_priority_array[a].id = 0;
+				sorted_priority_array[a].priority = 0;
+			}
+
+			for (int a = 0; a < n; a++) {
+				taskp* priority_array = new taskp[n];
+
 				int priority_sum = 0;
 				for (int b = 0; b < m; b++) {
 					priority_sum = priority_sum + time_matrix[a][b];
 				}
 				priority_array[a].id = a + 1;;
 				priority_array[a].priority = priority_sum;
-			}
 
+				
+
+
+
+				delete[] priority_array;
+			}
+			
 			
 			//Wyswietl priorytety zadan
-			/*
+			
 			cout << endl << "Priorytety zadan: " << endl;
 			for (int a = 0; a < n; a++) {
-				cout << "Zadanie " << priority_array[a].id << ": " << priority_array[a].priority << endl;
+				cout << "Zadanie " << sorted_priority_array[a].id << ": " << sorted_priority_array[a].priority << endl;
 			}
-			*/
+			
 			//TODO
 			//Sortowanie QuickSortem
 			
@@ -173,31 +226,41 @@ int main() {
 
 			//ALGORYTM NEH##################################################################################
 			auto search_start = chrono::steady_clock::now();
-			
+			int* permutation = new int[n];
 			for (int j = 0; j < n; j++) {
-				int* permutation = new int[j + 1];
-				for (int k = 0; k < j + 1; k++) {
-					permutation[k] = k;
-				}
+				permutation[j] = j;
 			}
-
-
+			/*
+			cout << "Permutacja: ";
+			for (int j = 0; j < n; j++) {
+				cout << permutation[j] << " ";
+			}
+			cout << endl;
+			*/
 			auto search_end = chrono::steady_clock::now();
 			//##############################################################################################
+			int c_max_left_top = calculate_from_left_top(time_matrix, permutation, m, n);
+			int c_max_right_bottom = calculate_from_right_bottom(time_matrix, permutation, m, n);
+			int c_max = 0;
+			if(c_max_left_top == c_max_right_bottom)
+				c_max = c_max_left_top;
+
+			cout << "C_max = " << c_max << endl;
 
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
-			cout << chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count() << " ms" << endl;
+			cout << chrono::duration_cast<chrono::nanoseconds>(search_end - search_start).count() / 1000 << " ms" << endl;
 			cout << "-------------------------------------------------------------------------" << endl;
+
+			time_sum = time_sum + chrono::duration_cast<chrono::nanoseconds>(search_end - search_start).count();
 
 			//Zwalnianie pamieci macierzy dynamicznej
 			for (int i = 0; i < n; ++i)
 				delete[] time_matrix[i];
 			delete[] time_matrix;
-			delete[] priority_array;
+			delete[]sorted_priority_array;
 		}
-		auto experiment_end = chrono::steady_clock::now();
-		cout << endl << "Obliczenia calosci zadanie trwaly: ";
-		cout << chrono::duration_cast<chrono::milliseconds>(experiment_end - experiment_start).count() << " ms" << endl;
+		cout << endl << "Obliczenia calosci zadanie trwaly (bez alokacji pamiêci): ";
+		cout << time_sum / 1000 << " ms" << endl;
 	}
 	data_file.close();
 
