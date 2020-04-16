@@ -1,7 +1,2 @@
 ﻿  main.cpp
-C:\Users\krios\source\repos\SPD\NEH\NEH\main.cpp(249,24): warning C4244: "=": konwersja z "_Rep" do "int", możliwa utrata danych
-          with
-          [
-              _Rep=__int64
-          ]
   NEH.vcxproj -> C:\Users\krios\source\repos\SPD\NEH\Debug\NEH.exe

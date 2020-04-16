@@ -10,7 +10,7 @@
 #include <chrono>
 #include <list>
 
-#define MAX_TEST_NUMBER 1
+#define MAX_TEST_NUMBER 121
 
 using namespace std;
 
@@ -18,6 +18,43 @@ struct taskp{
 	int id;
 	int priority;
 };
+
+void Swap(int* &tab, int a, int b) {
+	int temp = 0;
+
+	temp = tab[a];
+	tab[a] = tab[b];
+	tab[b] = temp;
+}
+
+void QuickSort(taskp *tab, int left, int right)
+{
+	int i = left;
+	int j = right;
+
+	taskp x = tab[(left + right) / 2];
+	do
+	{
+		while (tab[i].priority < x.priority || (tab[i].priority == x.priority && tab[i].id > x.id))
+			i++;
+
+		while (tab[j].priority > x.priority)
+			j--;
+
+		if (i <= j )
+		{
+			swap(tab[i], tab[j]);
+
+			i++;
+			j--;
+		}
+	} while (i <= j);
+
+	if (left < j) QuickSort(tab, left, j);
+
+	if (right > i) QuickSort(tab, i, right);
+
+}
 
 //WYLICZANIE CMAX###############################################################################
 int calculate_from_left_top(int** matrix, int* permutation, int m, int n) {
@@ -30,7 +67,6 @@ int calculate_from_left_top(int** matrix, int* permutation, int m, int n) {
 		for (int j = 0; j < m; j++) {
 			m_time[i][j] = 0;
 		}
-		
 	}
 
 	for (int i = 0; i < n; i++) { //zadania
@@ -61,6 +97,7 @@ int calculate_from_left_top(int** matrix, int* permutation, int m, int n) {
 		}
 	}
 	c_max = m_time[n-1][m-1];
+
 	for (int i = 0; i < n; ++i)
 		delete[] m_time[i];
 	delete[] m_time;
@@ -187,60 +224,81 @@ int main() {
 			//##############################################################################################
 
 			//WYZNACZANIE PRIORYTETOW ZADAN#################################################################
-			taskp* sorted_priority_array = new taskp[n];
+			taskp* priority_array = new taskp[n];
 
 			for (int a = 0; a < n; a++) {
-				sorted_priority_array[a].id = 0;
-				sorted_priority_array[a].priority = 0;
-			}
-
-			for (int a = 0; a < n; a++) {
-				taskp* priority_array = new taskp[n];
-
 				int priority_sum = 0;
 				for (int b = 0; b < m; b++) {
 					priority_sum = priority_sum + time_matrix[a][b];
 				}
-				priority_array[a].id = a + 1;;
+				priority_array[a].id = a;
 				priority_array[a].priority = priority_sum;
-
-				
-
-
-
-				delete[] priority_array;
 			}
-			
+			QuickSort(priority_array, 0, n - 1);
 			
 			//Wyswietl priorytety zadan
-			
+			/*
 			cout << endl << "Priorytety zadan: " << endl;
 			for (int a = 0; a < n; a++) {
-				cout << "Zadanie " << sorted_priority_array[a].id << ": " << sorted_priority_array[a].priority << endl;
+				cout << "Zadanie " << priority_array[a].id + 1 << ": " << priority_array[a].priority << endl;
 			}
-			
-			//TODO
-			//Sortowanie QuickSortem
-			
+			*/
+
 			//##############################################################################################
 
 			//ALGORYTM NEH##################################################################################
 			auto search_start = chrono::steady_clock::now();
 			int* permutation = new int[n];
+			int* better_permutation = new int[n];
+
+			for (int q = 0; q < n; q++)
+				permutation[q] = 0;
+			for (int q = 0; q < n; q++)
+				better_permutation[q] = 0;
+
 			for (int j = 0; j < n; j++) {
-				permutation[j] = j;
+				int best_c_max = INT_MAX;
+				permutation[j] = priority_array[n - 1 - j].id;
+
+				for (int q = 0; q < n; q++)
+					better_permutation[q] = permutation[q];
+				best_c_max = calculate_from_left_top(time_matrix, better_permutation, m, j + 1);
+				
+				for (int x = 0; x < j; x++) {
+					int new_c_max = INT_MAX;
+
+					Swap(permutation, j - x, j - x - 1);
+
+					new_c_max = calculate_from_left_top(time_matrix, permutation, m, j + 1);
+
+					if (new_c_max < best_c_max) {
+						for (int q = 0; q < n; q++)
+							better_permutation[q] = permutation[q];
+						best_c_max = new_c_max;
+					}
+				}
+				for (int q = 0; q < n; q++)
+					permutation[q] = better_permutation[q];
 			}
+			
+			cout << endl << "Permutacja: " << "[ ";
+			for (int j = 0; j < n; j++) {
+				cout << better_permutation[j] + 1 << " ";
+			}
+			cout << "] <---- Najlepsza" << endl;
+
 			/*
-			cout << "Permutacja: ";
+			cout << "Permutacja: [ ";
 			for (int j = 0; j < n; j++) {
 				cout << permutation[j] << " ";
 			}
-			cout << endl;
+			cout << "]" << endl;
 			*/
+
 			auto search_end = chrono::steady_clock::now();
 			//##############################################################################################
-			int c_max_left_top = calculate_from_left_top(time_matrix, permutation, m, n);
-			int c_max_right_bottom = calculate_from_right_bottom(time_matrix, permutation, m, n);
+			int c_max_left_top = calculate_from_left_top(time_matrix, better_permutation, m, n);
+			int c_max_right_bottom = calculate_from_right_bottom(time_matrix, better_permutation, m, n);
 			int c_max = 0;
 			if(c_max_left_top == c_max_right_bottom)
 				c_max = c_max_left_top;
@@ -248,19 +306,18 @@ int main() {
 			cout << "C_max = " << c_max << endl;
 
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
-			cout << chrono::duration_cast<chrono::nanoseconds>(search_end - search_start).count() / 1000 << " ms" << endl;
+			cout << chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count() << " ms" << endl;
 			cout << "-------------------------------------------------------------------------" << endl;
-
-			time_sum = time_sum + chrono::duration_cast<chrono::nanoseconds>(search_end - search_start).count();
 
 			//Zwalnianie pamieci macierzy dynamicznej
 			for (int i = 0; i < n; ++i)
 				delete[] time_matrix[i];
 			delete[] time_matrix;
-			delete[]sorted_priority_array;
+			delete[] priority_array;
+			delete[] better_permutation;
+			delete[] permutation;
 		}
-		cout << endl << "Obliczenia calosci zadanie trwaly (bez alokacji pamiêci): ";
-		cout << time_sum / 1000 << " ms" << endl;
+
 	}
 	data_file.close();
 
