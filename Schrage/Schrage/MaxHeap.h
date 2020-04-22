@@ -2,20 +2,15 @@
 
 #include <iostream>
 
+#include "Task.h"
+
 using namespace std;
 
-struct task {
-	int q;   // czas stygniêcia zadania 
-	int r;   // czas dostarczania zadania
-	int p;   // czas trwania zadania
-	int id;  // numer zadania
-};
-
-class r_MinHeap
+class q_MaxHeap
 {
 public:
-	r_MinHeap(int _size);
-	~r_MinHeap();
+	q_MaxHeap(int _size);
+	~q_MaxHeap();
 
 private:
 	task* heap_array;
@@ -33,10 +28,9 @@ public:
 	task extractMax();
 	void ShiftDown(int id);
 	void Display();
-	void Sort();
 };
 
-r_MinHeap::r_MinHeap(int _size)
+q_MaxHeap::q_MaxHeap(int _size)
 {
 	heap_array = new task[_size + 1];
 	heap_array[0].id = -1;
@@ -45,26 +39,26 @@ r_MinHeap::r_MinHeap(int _size)
 	heap_array[0].q = -1;
 }
 
-r_MinHeap::~r_MinHeap()
+q_MaxHeap::~q_MaxHeap()
 {
 	delete[] heap_array;
 }
 
-void r_MinHeap::swap(int id_1, int id_2)
+void q_MaxHeap::swap(int id_1, int id_2)
 {
 	task temp = heap_array[id_1];
 	heap_array[id_1] = heap_array[id_2];
 	heap_array[id_2] = temp;
 }
 
-void r_MinHeap::insert(task t)
+void q_MaxHeap::insert(task t)
 {
 	heap_array[++_size] = t;
 	ShiftUp(_size);
 	return;
 }
 
-void r_MinHeap::ShiftUp(int id)
+void q_MaxHeap::ShiftUp(int id)
 {
 	if (id > _size) return;
 	if (id == 1) return;
@@ -74,7 +68,7 @@ void r_MinHeap::ShiftUp(int id)
 	ShiftUp(parent(id));
 }
 
-task r_MinHeap::extractMax()
+task q_MaxHeap::extractMax()
 {
 	task qMaxTask = heap_array[1];
 	swap(1, _size--);
@@ -82,7 +76,7 @@ task r_MinHeap::extractMax()
 	return qMaxTask;
 }
 
-void r_MinHeap::ShiftDown(int id)
+void q_MaxHeap::ShiftDown(int id)
 {
 	if (id > _size) return;
 
@@ -102,7 +96,7 @@ void r_MinHeap::ShiftDown(int id)
 	return;
 }
 
-void r_MinHeap::Display()
+void q_MaxHeap::Display()
 {
 	cout << endl << endl << endl;
 	cout << "Tablica Kopca:" << endl;

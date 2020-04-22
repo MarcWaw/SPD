@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 
+#include "Task.h"
 #include "MaxHeap.h"
+#include "MinHeap.h"
 
 #define MAX_TEST_NUMBER 2 //9
 
@@ -51,21 +53,23 @@ int main() {
 
 			cout << "Ilosc zadan do wykonania: " << n << endl;
 			
-			r_MinHeap* awaitingTasks = new r_MinHeap(n);
+			q_MaxHeap* awaitingTasks = new q_MaxHeap(n);
+			r_MinHeap* unasignedTasks = new r_MinHeap(n);
 
 			for (int j = 0; j < n; j++) {
 				task temp_task;
 				temp_task.id = j + 1;
 				data_file >> temp_task.r >> temp_task.p >> temp_task.q;
+				unasignedTasks->insert(temp_task);
 				awaitingTasks->insert(temp_task);
 			}
 
-			awaitingTasks->Display();
-			while (!awaitingTasks->isEmpty()) {
-				cout << "Max: " << awaitingTasks->extractMax().q << endl;
-				awaitingTasks->Display();
-			}
-			
+			cout << "Malejaco" << endl; 
+			while(!awaitingTasks->isEmpty())
+			cout << awaitingTasks->extractMax().q << endl;
+			cout << "Rosnaco: " << endl;
+			while (!unasignedTasks->isEmpty())
+				cout << unasignedTasks->extractMin().r << endl;
 			cout << "-------------------------------------------------------------------------" << endl;
 		}
 	}

@@ -2,14 +2,9 @@
 
 #include <iostream>
 
-using namespace std;
+#include "Task.h"
 
-struct task {
-	int q;   // czas stygniêcia zadania 
-	int r;   // czas dostarczania zadania
-	int p;   // czas trwania zadania
-	int id;  // numer zadania
-};
+using namespace std;
 
 class r_MinHeap
 {
@@ -27,10 +22,10 @@ private:
 	void swap(int id_1, int id_2);
 public:
 	bool isEmpty() { return _size == 0; };
-	task getMax() { return heap_array[1]; };
+	task getMin() { return heap_array[1]; };
 	void insert(task t);
 	void ShiftUp(int id);
-	task extractMax();
+	task extractMin();
 	void ShiftDown(int id);
 	void Display();
 
@@ -68,18 +63,18 @@ void r_MinHeap::ShiftUp(int id)
 {
 	if (id > _size) return;
 	if (id == 1) return;
-	if (heap_array[id].q > heap_array[parent(id)].q) {
+	if (heap_array[id].r < heap_array[parent(id)].r) {
 		swap(parent(id), id);
 	}
 	ShiftUp(parent(id));
 }
 
-task r_MinHeap::extractMax()
+task r_MinHeap::extractMin()
 {
-	task qMaxTask = heap_array[1];
+	task rMinTask = heap_array[1];
 	swap(1, _size--);
 	ShiftDown(1);
-	return qMaxTask;
+	return rMinTask;
 }
 
 void r_MinHeap::ShiftDown(int id)
@@ -88,14 +83,15 @@ void r_MinHeap::ShiftDown(int id)
 
 	int swapId = id;
 
-	if (left_child(id) <= _size && heap_array[id].q < heap_array[left_child(id)].q)
+	if (left_child(id) <= _size && heap_array[id].r > heap_array[left_child(id)].r)
 		swapId = left_child(id);
 
-	if (right_child(id) <= _size && heap_array[swapId].q < heap_array[right_child(id)].q)
+	if (right_child(id) <= _size && heap_array[swapId].r > heap_array[right_child(id)].r)
 		swapId = right_child(id);
 
 	if (swapId != id) {
 		swap(id, swapId);
+		ShiftDown(swapId);
 	}
 
 	return;
