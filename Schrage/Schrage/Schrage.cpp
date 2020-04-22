@@ -2,16 +2,11 @@
 #include <fstream>
 #include <string>
 
-#define MAX_TEST_NUMBER 9
+#include "MaxHeap.h"
+
+#define MAX_TEST_NUMBER 2 //9
 
 using namespace std;
-
-struct task {
-	int q;   // czas stygniêcia zadania 
-	int r;   // czas dostarczania zadania
-	int p;   // czas trwania zadania
-	int id;  // numer zadania
-};
 
 int main() {
 	ifstream data_file;
@@ -45,7 +40,6 @@ int main() {
 		cout << "-------------------------------------------------------------------------" << endl;
 		for (int i = 0; i < MAX_TEST_NUMBER; i++) {
 			int n = 0; // iloœæ zadañ do wykonania
-			task* task_array;
 
 			while (line != data_name[i]) {
 				getline(data_file, line);
@@ -56,16 +50,18 @@ int main() {
 			data_file >> n;
 
 			cout << "Ilosc zadan do wykonania: " << n << endl;
-			task_array = new task[n];
+			
+			q_MaxHeap* awaitingTasks = new q_MaxHeap(n);
 
 			for (int j = 0; j < n; j++) {
 				task temp_task;
 				temp_task.id = j + 1;
 				data_file >> temp_task.r >> temp_task.p >> temp_task.q;
-				task_array[j] = temp_task;
+				awaitingTasks->insert(temp_task);
 			}
 
-			delete[] task_array;
+			awaitingTasks->Display();
+			
 			cout << "-------------------------------------------------------------------------" << endl;
 		}
 	}
