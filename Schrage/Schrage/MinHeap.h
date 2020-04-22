@@ -33,7 +33,7 @@ public:
 	task extractMax();
 	void ShiftDown(int id);
 	void Display();
-	void Sort();
+
 };
 
 r_MinHeap::r_MinHeap(int _size)
@@ -94,15 +94,14 @@ void r_MinHeap::ShiftDown(int id)
 	if (right_child(id) <= _size && heap_array[swapId].q < heap_array[right_child(id)].q)
 		swapId = right_child(id);
 
-	if(swapId != id){
+	if (swapId != id) {
 		swap(id, swapId);
-		ShiftDown(swapId);
 	}
 
 	return;
 }
 
-void r_MinHeap::Display()
+inline void r_MinHeap::Display()
 {
 	cout << endl << endl << endl;
 	cout << "Tablica Kopca:" << endl;

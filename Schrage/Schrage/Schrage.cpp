@@ -51,7 +51,7 @@ int main() {
 
 			cout << "Ilosc zadan do wykonania: " << n << endl;
 			
-			q_MaxHeap* awaitingTasks = new q_MaxHeap(n);
+			r_MinHeap* awaitingTasks = new r_MinHeap(n);
 
 			for (int j = 0; j < n; j++) {
 				task temp_task;
@@ -61,6 +61,10 @@ int main() {
 			}
 
 			awaitingTasks->Display();
+			while (!awaitingTasks->isEmpty()) {
+				cout << "Max: " << awaitingTasks->extractMax().q << endl;
+				awaitingTasks->Display();
+			}
 			
 			cout << "-------------------------------------------------------------------------" << endl;
 		}
