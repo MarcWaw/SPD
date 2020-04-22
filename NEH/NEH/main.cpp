@@ -288,7 +288,7 @@ int main() {
 				}
 				// Posortowanie tego miejsca ze wzgledu na nr zadania
 				Quick_Sort(priority_array, first_index, last_index);
-				//sort(priority_array + firstIndexOfSameValue, priority_array + lastIndexOfSameValue + 1, [](const taskp& first, const taskp& second) { return first.id > second.id; });
+				//sort(priority_array + first_index, priority_array + last_index + 1, [](const taskp& first, const taskp& second) { return first.id > second.id; });
 			}
 			
 
