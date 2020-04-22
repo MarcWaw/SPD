@@ -27,6 +27,42 @@ void Swap(int* &tab, int a, int b) {
 	tab[b] = temp;
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+
+// sortowanie malej¹co ze wzglêdu na id
+void Quick_Sort(taskp* tab, int left, int right)
+{
+	int i = left;
+	int j = right;
+
+	taskp x = tab[(left + right) / 2];
+	do
+	{
+		while (tab[i].id > x.id)
+		i++;
+
+		while (tab[j].id < x.id)
+			j--;
+
+		if (i <= j)
+		{
+			swap(tab[i], tab[j]);
+
+			i++;
+			j--;
+		}
+	} while (i <= j);
+
+	if (left < j) Quick_Sort(tab, left, j);
+
+	if (right > i) Quick_Sort(tab, i, right);
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+
+// sortowanie rosn¹co ze wzglêdu na priorytety
 void QuickSort(taskp *tab, int left, int right)
 {
 	int i = left;
@@ -35,7 +71,7 @@ void QuickSort(taskp *tab, int left, int right)
 	taskp x = tab[(left + right) / 2];
 	do
 	{
-		while (tab[i].priority < x.priority || (tab[i].priority == x.priority && tab[i].id > x.id))
+		while (tab[i].priority < x.priority)// || (tab[i].priority == x.priority && tab[i].id > x.id))
 			i++;
 
 		while (tab[j].priority > x.priority)
@@ -96,6 +132,8 @@ int calculate_from_left_top(int** matrix, int* permutation, int m, int n) {
 			}
 		}
 	}
+
+
 	c_max = m_time[n-1][m-1];
 
 	for (int i = 0; i < n; ++i)
@@ -235,18 +273,36 @@ int main() {
 				priority_array[a].priority = priority_sum;
 			}
 			QuickSort(priority_array, 0, n - 1);
+
+
+			// Znalezienie obszaru tablicy, gdzie priorytety s¹ równe
+			int first_index = 0;
+			int last_index = 0;
+			for (int i = 0; i < n - 1; i++) {
+				if (priority_array[i].priority == priority_array[i + 1].priority) {
+					first_index = i;
+					while (priority_array[i].priority == priority_array[i + 1].priority) {
+						i++;
+					}
+					last_index = i;
+				}
+				// Posortowanie tego miejsca ze wzgledu na nr zadania
+				Quick_Sort(priority_array, first_index, last_index);
+				//sort(priority_array + firstIndexOfSameValue, priority_array + lastIndexOfSameValue + 1, [](const taskp& first, const taskp& second) { return first.id > second.id; });
+			}
 			
+
 			//Wyswietl priorytety zadan
 			/*
-			cout << endl << "Priorytety zadan: " << endl;
+			cout << endl << "priorytety zadan: " << endl;
 			for (int a = 0; a < n; a++) {
-				cout << "Zadanie " << priority_array[a].id + 1 << ": " << priority_array[a].priority << endl;
-			}
-			*/
+				cout << "zadanie " << priority_array[a].id + 1 << ": " << priority_array[a].priority << endl;
+			}*/
+			
 
 			//##############################################################################################
 
-			//ALGORYTM NEH##################################################################################
+			//ALGORYTM NEH ##################################################################################
 			auto search_start = chrono::steady_clock::now();
 			int* permutation = new int[n];
 			int* better_permutation = new int[n];
@@ -271,7 +327,7 @@ int main() {
 
 					new_c_max = calculate_from_left_top(time_matrix, permutation, m, j + 1);
 
-					if (new_c_max < best_c_max) {
+					if (new_c_max <= best_c_max) {
 						for (int q = 0; q < n; q++)
 							better_permutation[q] = permutation[q];
 						best_c_max = new_c_max;
@@ -300,8 +356,9 @@ int main() {
 			int c_max_left_top = calculate_from_left_top(time_matrix, better_permutation, m, n);
 			int c_max_right_bottom = calculate_from_right_bottom(time_matrix, better_permutation, m, n);
 			int c_max = 0;
-			if(c_max_left_top == c_max_right_bottom)
+			if (c_max_left_top == c_max_right_bottom)
 				c_max = c_max_left_top;
+				
 
 			cout << "C_max = " << c_max << endl;
 
