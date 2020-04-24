@@ -5,7 +5,7 @@ data.000:
 14 36 54
 133 76 5
 
-schrpmtn:s
+schrpmtn:
 221
 
 schr:
