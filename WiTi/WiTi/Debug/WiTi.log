@@ -1,3 +1,8 @@
 ﻿  main.cpp
-C:\Users\krios\source\repos\MarcWaw\SPD\WiTi\WiTi\main.cpp(70,31): warning C4244: "argument": konwersja z "double" do "const unsigned int", możliwa utrata danych
-  WiTi.vcxproj -> C:\Users\krios\source\repos\MarcWaw\SPD\WiTi\Debug\WiTi.exe
+C:\Users\krios\source\repos\SPD\WiTi\WiTi\main.cpp(69,27): warning C4244: "argument": konwersja z "double" do "const unsigned int", możliwa utrata danych
+C:\Users\krios\source\repos\SPD\WiTi\WiTi\main.cpp(102,94): warning C4244: "=": konwersja z "_Rep" do "double", możliwa utrata danych
+          with
+          [
+              _Rep=__int64
+          ]
+  WiTi.vcxproj -> C:\Users\krios\source\repos\SPD\WiTi\Debug\WiTi.exe

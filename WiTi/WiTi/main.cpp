@@ -13,9 +13,9 @@
 #define MAX_N 20
 
 struct task {
-	int p;
-	int w;
-	int d;
+	int p; // czas trwania zadania
+	int w; // waga
+	int d; // po¿¹dany termin zakoñczenia
 	int id;
 };
 
@@ -26,6 +26,9 @@ int main()
 	const string data_name[MAX_TEST_NUMBER] = { "data.10","data.11","data.12","data.13","data.14","data.15","data.16","data.17","data.18","data.19","data.20" };
 
 	task tasks[MAX_N];
+
+	double time_tab[MAX_TEST_NUMBER];
+	double time = 0;
 
 	double number_of_permutations = 0;
 
@@ -43,7 +46,7 @@ int main()
 	else {
 		cout << "Pomyslnie otwarto plik o nazwie: " << file_name << endl;
 		cout << "-------------------------------------------------------------------------" << endl;
-		for (int k = 0; k <1; k++) {
+		for (int k = 0; k < 11; k++) {
 			int n = 0; // iloœæ zadañ do wykonania
 
 			cout << "Plik: " << data_name[k] << ":" << endl;
@@ -55,55 +58,51 @@ int main()
 			cout << "Ilosc zadan do wykonania: " << n << endl;
 
 			for (int j = 0; j < n; j++) {
-				//data_file >> p[j] >> w[j] >> d[j];
 				tasks[j].id = j;
 				data_file >> tasks[j].p >> tasks[j].w >> tasks[j].d;
 			}
 
-			// Wyœwietlenie
-			/*for (int j = 0; j < n; j++) {
-				cout << p[j] << " " << w[j] << " " << d[j] << endl;
-			}*/
+			// Algorytm PD zaimplementowany zgodnie ze schematem dzia³ania przedstawionym na wyk³adzie: http://mariusz.makuchowski.staff.iiar.pwr.wroc.pl/download/courses/sterowanie.procesami.dyskretnymi/lab.instrukcje/lab02.witi/witi.literatura/SPD_WiTi.pdf
 
 			number_of_permutations = pow(2.0, n);
 
-			vector<int> sub_set_vector(number_of_permutations);
+			vector<int> set_vector(number_of_permutations); // przechowuje kary optymalnego uszeregowania zadañ - oznaczenie F na wyk³adzie
 
-			sub_set_vector[0] = 0;
+			set_vector[0] = 0;
 
-			int sum_of_p_InSubSet = 0; // suma czasów wykonania zadañ
+			int sum_of_p = 0; // d³ugoœæ uszeregowania zadañ - oznaczenie C na wyk³adzie
 
 			auto search_start = chrono::steady_clock::now();
 
-			for (int sub_set_index = 1; sub_set_index < number_of_permutations; sub_set_index++) {
-				sum_of_p_InSubSet = 0;
+			for (int set_index = 1; set_index < number_of_permutations; set_index++) {
+				sum_of_p = 0;
 				for (int i = 0, b = 1; i < n; i++, b *= 2) {
 					/*
 					i - indeks zadania w tabeli
 					b - kolejne potegi liczby 2
 					*/
 
-					if (sub_set_index & b) { // iloczyn bitowy
-						sum_of_p_InSubSet += tasks[i].p;
-						//cout << "Zaszedl iloczyn bitowy" << endl;
+					if (set_index & b) { // iloczyn bitowy
+						sum_of_p += tasks[i].p;
 					}
 				}
 
-				sub_set_vector[sub_set_index] = numeric_limits<int>::max();
-				
+				set_vector[set_index] = numeric_limits<int>::max(); // ustawienie aktualnego indeksu w set_vector na bardzo du¿¹ liczbê
+
 				for (int i = 0, b = 1; i < n; i++, b *= 2) {
-					if (sub_set_index & b) {
+					if (set_index & b) {
 						// algorytm PD
-						
-						sub_set_vector[sub_set_index] = min(sub_set_vector[sub_set_index], sub_set_vector[sub_set_index - b] + tasks[i].w * max(0, sum_of_p_InSubSet - tasks[i].d));
+
+						set_vector[set_index] = min(set_vector[set_index], set_vector[set_index - b] + tasks[i].w * max(0, sum_of_p - tasks[i].d));
 					}
 				}
 			}
 			cout << endl;
 			auto search_end = chrono::steady_clock::now();
-			cout << "Optymalny czas wykonywania zadan: " << sub_set_vector.back() << " jednostek czasu." << endl;
-			cout << endl << "Znaleziono optymalne rozwiazanie dla danych [" << data_name[k] << "] w czasie: " << chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count() << " ms" << endl;
-			sub_set_vector.clear();
+			time_tab[k] = chrono::duration_cast<chrono::milliseconds>(search_end - search_start).count();
+			cout << "Optymalny czas wykonywania zadan: " << set_vector.back() << " jednostek czasu." << endl;
+			cout << endl << "Znaleziono optymalne rozwiazanie dla danych [" << data_name[k] << "] w czasie: " << time_tab[k] << " ms" << endl;
+			set_vector.clear();
 
 			cout << "-------------------------------------------------------------------------" << endl;
 		}
@@ -112,6 +111,11 @@ int main()
 	data_file.close();
 
 	cout << endl;
+	for (int i = 0; i < MAX_TEST_NUMBER; i++) {
+		time = time + time_tab[i];
+	}
+	cout << "Laczny czas trwania programu: " << time << "ms" << endl;
+
 	system("pause");
 
 	return 0;
