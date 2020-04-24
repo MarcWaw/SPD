@@ -92,7 +92,6 @@ int main()
 				for (int i = 0, b = 1; i < n; i++, b *= 2) {
 					if (set_index & b) {
 						// algorytm PD
-
 						set_vector[set_index] = min(set_vector[set_index], set_vector[set_index - b] + tasks[i].w * max(0, sum_of_p - tasks[i].d));
 					}
 				}
