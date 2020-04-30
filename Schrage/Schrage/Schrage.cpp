@@ -1,15 +1,98 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
+#include <limits>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <chrono>
+
 
 #include "Task.h"
 #include "MaxHeap.h"
 #include "MinHeap.h"
 
-#define MAX_TEST_NUMBER 2 //9
+#define MAX_TEST_NUMBER 9
 
 using namespace std;
 
+int calculateC_MAX(vector<task> tasks) {
+	int m = 0, c = 0;
+	for (int i = 0; i < tasks.size(); i++) {
+		m = max(tasks[i].r, m) + tasks[i].p;
+		c = max(c, m + tasks[i].q);
+	}
+	return c;
+}
+
+
+// Algorytm Schrage
+void schrage(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time, vector<task> result, int n) {
+	while (result.size() != n) {
+		while (unasignedTasks->isEmpty() == false && unasignedTasks->getMin().r <= time) {
+			awaitingTasks->insert(unasignedTasks->extractMin());
+		}
+		if (awaitingTasks->isEmpty() == false) {
+			result.push_back(awaitingTasks->extractMax());
+			time = time + result.back().p;
+		}
+		else {
+			time = unasignedTasks->getMin().r;
+		}
+
+		// Bledny wynik dla data003 - zamiana kolejnosci zadania 32 z 4 (powinno brac po kolei zadania, pomijajac na poczatku zad 1)
+		// TODO czemu nie bierze po kolei tylko dwa zamienilo ????
+
+	}
+	int C_max = calculateC_MAX(result);
+	cout << "***Algorytm Schrage***" << endl;
+	cout << "C_max = " << C_max << endl;
+	cout << "Permutacja: ";
+	for (int i = 0; i < n; i++) {
+		cout << result[i].id << " ";
+	}
+	cout << endl;
+}
+
+
+// Algorytm Schrage z przerwaniami - jeszcze niegotowy!!!
+void schrage2(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time) {
+	int C_max2 = 0;
+	task temp1, temp2;
+
+	while (!unasignedTasks->isEmpty() || !awaitingTasks->isEmpty()) {
+		while (unasignedTasks->isEmpty() == false && unasignedTasks->getMin().r <= time) {
+			awaitingTasks->insert(unasignedTasks->extractMin());
+			temp1 = awaitingTasks->extractMax();
+			// wez i sprawdzaj zeby przerywac
+			if (temp1.q < awaitingTasks->getMax().q) {
+				temp1.p = time - awaitingTasks->getMax().r;
+				time = awaitingTasks->getMax().r;
+				if (temp1.p > 0) {
+					awaitingTasks->insert(temp1);
+				}
+			}
+		}
+
+		if (awaitingTasks->isEmpty() == true) {
+			time = unasignedTasks->getMin().r;
+		}
+		else {
+			temp2 = awaitingTasks->extractMax();
+			time = time + temp2.p;
+			C_max2 = max(C_max2, time + temp2.q);
+		}
+
+	}
+	cout << "---Algorytm Schrage z przerwaniami---" << endl;
+	cout << "C_max2 = " << C_max2 << endl;
+
+}
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int main() {
 	ifstream data_file;
 	const char* file_name = "Data.txt";
@@ -61,15 +144,42 @@ int main() {
 				temp_task.id = j + 1;
 				data_file >> temp_task.r >> temp_task.p >> temp_task.q;
 				unasignedTasks->insert(temp_task);
-				awaitingTasks->insert(temp_task);
+				//awaitingTasks->insert(temp_task);
 			}
 
-			cout << "Malejaco" << endl; 
+			vector<task> result;
+
+			task task_min = unasignedTasks->getMin();
+			int time = task_min.r; // czas startu
+
+			auto search_start1 = chrono::steady_clock::now();
+			schrage(unasignedTasks, awaitingTasks, time, result, n);
+			auto search_end1 = chrono::steady_clock::now();
+			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
+			cout << chrono::duration_cast<chrono::milliseconds>(search_end1 - search_start1).count() << " ms" << endl;
+
+			cout << endl;
+			cout << endl;
+
+			auto search_start2 = chrono::steady_clock::now();
+			schrage2(unasignedTasks, awaitingTasks, time);
+			auto search_end2 = chrono::steady_clock::now();
+			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
+			cout << chrono::duration_cast<chrono::milliseconds>(search_end2 - search_start2).count() << " ms" << endl;
+
+
+
+			result.clear();
+			unasignedTasks->~r_MinHeap();
+			awaitingTasks->~q_MaxHeap();
+
+
+			/*cout << "Malejaco" << endl; 
 			while(!awaitingTasks->isEmpty())
 			cout << awaitingTasks->extractMax().q << endl;
 			cout << "Rosnaco: " << endl;
 			while (!unasignedTasks->isEmpty())
-				cout << unasignedTasks->extractMin().r << endl;
+				cout << unasignedTasks->extractMin().r << endl;*/
 			cout << "-------------------------------------------------------------------------" << endl;
 		}
 	}
