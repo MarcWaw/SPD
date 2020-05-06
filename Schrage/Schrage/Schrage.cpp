@@ -27,22 +27,22 @@ int calculateC_MAX(vector<task> tasks) {
 }
 
 
-// Algorytm Schrage
+////////////// Algorytm Schrage
 void schrage(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time, vector<task> result, int n) {
+	r_MinHeap* unasignedTasks_copy = unasignedTasks;
 	while (result.size() != n) {
-		while (unasignedTasks->isEmpty() == false && unasignedTasks->getMin().r <= time) {
-			awaitingTasks->insert(unasignedTasks->extractMin());
+		while (unasignedTasks_copy->isEmpty() == false && unasignedTasks_copy->getMin().r <= time) {
+			awaitingTasks->insert(unasignedTasks_copy->extractMin());
 		}
 		if (awaitingTasks->isEmpty() == false) {
 			result.push_back(awaitingTasks->extractMax());
 			time = time + result.back().p;
 		}
 		else {
-			time = unasignedTasks->getMin().r;
+			time = unasignedTasks_copy->getMin().r;
 		}
 
-		// Bledny wynik dla data003 - zamiana kolejnosci zadania 32 z 4 (powinno brac po kolei zadania, pomijajac na poczatku zad 1)
-		// TODO czemu nie bierze po kolei tylko dwa zamienilo ????
+		// Bledny wynik dla data003 
 
 	}
 	int C_max = calculateC_MAX(result);
@@ -56,38 +56,44 @@ void schrage(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time, vect
 }
 
 
-// Algorytm Schrage z przerwaniami - jeszcze niegotowy!!!
-void schrage2(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time) {
-	int C_max2 = 0;
-	task temp1, temp2;
+/////////////////// Schrage z przerwaniami 
+void schrage_interrupt(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time) {
+	task now, temp1;
+	now.r = 0;
+	now.p = 0;
+	now.q = 0;
+	temp1.r = 0; temp1.p = 0; temp1.q = 0;
+	int C_max = 0;
 
 	while (!unasignedTasks->isEmpty() || !awaitingTasks->isEmpty()) {
 		while (unasignedTasks->isEmpty() == false && unasignedTasks->getMin().r <= time) {
-			awaitingTasks->insert(unasignedTasks->extractMin());
-			temp1 = awaitingTasks->extractMax();
-			// wez i sprawdzaj zeby przerywac
-			if (temp1.q < awaitingTasks->getMax().q) {
-				temp1.p = time - awaitingTasks->getMax().r;
-				time = awaitingTasks->getMax().r;
-				if (temp1.p > 0) {
-					awaitingTasks->insert(temp1);
+			temp1 = unasignedTasks->getMin();
+			awaitingTasks->insert(temp1);
+			unasignedTasks->extractMin();
+
+			if (temp1.q > now.q) {
+				now.p = time - temp1.r;
+				time = temp1.r;
+				if (now.p > 0) {
+					awaitingTasks->insert(now);
 				}
 			}
 		}
 
-		if (awaitingTasks->isEmpty() == true) {
+		if (awaitingTasks->isEmpty() == true) { // jezeli zadne zadanie nie jest obecnie wykonywane to zrób skok time
 			time = unasignedTasks->getMin().r;
 		}
-		else {
-			temp2 = awaitingTasks->extractMax();
-			time = time + temp2.p;
-			C_max2 = max(C_max2, time + temp2.q);
+		else { // jezeli jest cos wykonywane
+			temp1 = awaitingTasks->getMax();
+			awaitingTasks->extractMax();
+			now = temp1;
+			time = time + temp1.p;
+			C_max = max(C_max, time + temp1.q);
 		}
 
 	}
 	cout << "---Algorytm Schrage z przerwaniami---" << endl;
-	cout << "C_max2 = " << C_max2 << endl;
-
+	cout << "C_max = " << C_max << endl;
 }
 
 
@@ -152,7 +158,7 @@ int main() {
 			task task_min = unasignedTasks->getMin();
 			int time = task_min.r; // czas startu
 
-			auto search_start1 = chrono::steady_clock::now();
+			/*auto search_start1 = chrono::steady_clock::now();
 			schrage(unasignedTasks, awaitingTasks, time, result, n);
 			auto search_end1 = chrono::steady_clock::now();
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
@@ -161,8 +167,11 @@ int main() {
 			cout << endl;
 			cout << endl;
 
+
+			time = task_min.r;*/
+
 			auto search_start2 = chrono::steady_clock::now();
-			schrage2(unasignedTasks, awaitingTasks, time);
+			schrage_interrupt(unasignedTasks, awaitingTasks, time);
 			auto search_end2 = chrono::steady_clock::now();
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
 			cout << chrono::duration_cast<chrono::milliseconds>(search_end2 - search_start2).count() << " ms" << endl;
