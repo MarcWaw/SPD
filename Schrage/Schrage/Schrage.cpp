@@ -28,17 +28,24 @@ int calculateC_MAX(vector<task> tasks) {
 
 
 ////////////// Algorytm Schrage
-void schrage(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int time, vector<task> result, int n) {
-	r_MinHeap* unasignedTasks_copy = unasignedTasks;
+void schrage(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int t, vector<task> result, int n) {
+	r_MinHeap* unasignedTasks_copy = new r_MinHeap(n);
+	unasignedTasks_copy = unasignedTasks;
+	q_MaxHeap* awaitingTasks_copy = new q_MaxHeap(n);
+	awaitingTasks_copy = awaitingTasks;
+	int time = 0;
+	time = t;
+
+
 	while (result.size() != n) {
 		while (unasignedTasks_copy->isEmpty() == false && unasignedTasks_copy->getMin().r <= time) {
-			awaitingTasks->insert(unasignedTasks_copy->extractMin());
+			awaitingTasks_copy->insert(unasignedTasks_copy->extractMin());
 		}
-		if (awaitingTasks->isEmpty() == false) {
-			result.push_back(awaitingTasks->extractMax());
+		if (awaitingTasks_copy->isEmpty() == false) {
+			result.push_back(awaitingTasks_copy->extractMax());
 			time = time + result.back().p;
 		}
-		else {
+		else { // jesli nie ma dostepnych zadan to przeskocz z czasem
 			time = unasignedTasks_copy->getMin().r;
 		}
 
@@ -71,10 +78,10 @@ void schrage_interrupt(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int 
 			awaitingTasks->insert(temp1);
 			unasignedTasks->extractMin();
 
-			if (temp1.q > now.q) {
-				now.p = time - temp1.r;
+			if (temp1.q > now.q) { // jezeli nowe zadanie ma wieksze q niz obecnie wykonywane
+				now.p = time - temp1.r; // zmiana wielkosci p wykonywanego zadania
 				time = temp1.r;
-				if (now.p > 0) {
+				if (now.p > 0) { // jezeli jeszcze cos jest to zrobienia w tym zadaniu to dodaj do kopca oczekujacych
 					awaitingTasks->insert(now);
 				}
 			}
@@ -92,7 +99,7 @@ void schrage_interrupt(r_MinHeap* unasignedTasks, q_MaxHeap* awaitingTasks, int 
 		}
 
 	}
-	cout << "---Algorytm Schrage z przerwaniami---" << endl;
+	cout << "***Algorytm Schrage z przerwaniami***" << endl;
 	cout << "C_max = " << C_max << endl;
 }
 
@@ -141,25 +148,27 @@ int main() {
 			data_file >> n;
 
 			cout << "Ilosc zadan do wykonania: " << n << endl;
+			cout << endl;
 			
 			q_MaxHeap* awaitingTasks = new q_MaxHeap(n);
 			r_MinHeap* unasignedTasks = new r_MinHeap(n);
+			r_MinHeap* unasignedTasks2 = new r_MinHeap(n);
 
 			for (int j = 0; j < n; j++) {
 				task temp_task;
 				temp_task.id = j + 1;
 				data_file >> temp_task.r >> temp_task.p >> temp_task.q;
 				unasignedTasks->insert(temp_task);
-				//awaitingTasks->insert(temp_task);
+				unasignedTasks2->insert(temp_task);
 			}
 
-			vector<task> result;
+			vector<task> result; // tablica zadan uszeregowanych
 
 			task task_min = unasignedTasks->getMin();
 			int time = task_min.r; // czas startu
 
-			/*auto search_start1 = chrono::steady_clock::now();
-			schrage(unasignedTasks, awaitingTasks, time, result, n);
+			auto search_start1 = chrono::steady_clock::now();
+			schrage(unasignedTasks2, awaitingTasks, time, result, n);
 			auto search_end1 = chrono::steady_clock::now();
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
 			cout << chrono::duration_cast<chrono::milliseconds>(search_end1 - search_start1).count() << " ms" << endl;
@@ -167,8 +176,7 @@ int main() {
 			cout << endl;
 			cout << endl;
 
-
-			time = task_min.r;*/
+			//time = task_min.r;
 
 			auto search_start2 = chrono::steady_clock::now();
 			schrage_interrupt(unasignedTasks, awaitingTasks, time);
@@ -183,6 +191,7 @@ int main() {
 			awaitingTasks->~q_MaxHeap();
 
 
+			// Test kopcow
 			/*cout << "Malejaco" << endl; 
 			while(!awaitingTasks->isEmpty())
 			cout << awaitingTasks->extractMax().q << endl;
