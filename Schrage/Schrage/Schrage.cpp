@@ -158,7 +158,7 @@ int main() {
 			task task_min = unasignedTasks->getMin();
 			int time = task_min.r; // czas startu
 
-			/*auto search_start1 = chrono::steady_clock::now();
+			auto search_start1 = chrono::steady_clock::now();
 			schrage(unasignedTasks, awaitingTasks, time, result, n);
 			auto search_end1 = chrono::steady_clock::now();
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
@@ -168,14 +168,14 @@ int main() {
 			cout << endl;
 
 
-			time = task_min.r;*/
-
+			time = task_min.r;
+			/*
 			auto search_start2 = chrono::steady_clock::now();
 			schrage_interrupt(unasignedTasks, awaitingTasks, time);
 			auto search_end2 = chrono::steady_clock::now();
 			cout << endl << "Znaleziono optymalne rozwiazanie dla danych " << data_name[i] << " w czasie: ";
 			cout << chrono::duration_cast<chrono::milliseconds>(search_end2 - search_start2).count() << " ms" << endl;
-
+			*/
 
 
 			result.clear();
